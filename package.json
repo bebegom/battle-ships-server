@@ -1,5 +1,5 @@
 {
-  "name": "13-clock-server",
+  "name": "battleships-server",
   "version": "0.1.0",
   "private": true,
   "main": "server.js",
