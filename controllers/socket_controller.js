@@ -48,6 +48,7 @@ const handleConnect = (userId) => {
 
 		// check if another user is in lobby
 		if (lobby.length === 2) {
+			
 			room.push(lobby[0], lobby[1])
 
 			const player1 = room[0];
