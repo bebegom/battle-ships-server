@@ -25,21 +25,16 @@ const handleConnect = (userId) => {
 		id: userId,
 		ships: {
 			battleship: {
-				squares: {1: true, 2: true, 3: true, 4: true},
-				position: {x: 0, y: 0}
+				hp: 4
 			},
 			cruiser: {
-				squares: {1: true, 2: true, 3: true},
-				position: {x: 0, y: 0}
-
+				hp: 3
 			},
 			submarine: {
-				squares: {1: true, 2: true,},
-				position: {x: 0, y: 0}
+				hp: 2
 			},
 			destroyer: {
-				squares: {1: true, 2: true,},
-				position: {x: 0, y: 0}
+				hp: 2
 			}
 		}
 	}
@@ -50,9 +45,20 @@ const handleConnect = (userId) => {
 
 	// Check if a game already is ongoing
 	if (!room.length) {
+
 		// check if another user is in lobby
 		if (lobby.length === 2) {
 			room.push(lobby[0], lobby[1])
+
+			const player1 = room[0];
+			const player2 = room[1];
+
+			const activeUser = room.find(user => user = userId)
+			const opponent = room.find(user => user = !userId)
+
+			// emit to users in room
+			io.to(userId).emit('game:start', activeUser)
+
 
 			lobby.splice(0, 2);
 		}
