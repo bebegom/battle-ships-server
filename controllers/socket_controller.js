@@ -87,6 +87,22 @@ const handleResetRoom = () => {
 	debug(`Client ${this.id} disconnected :(`);
 }
 
+/**
+ * Handle a user click and hit/miss response
+ *
+ */
+const handleUserClickBox = (socketId) => {
+	const opponent = room.find(user => user = !socketId)
+	io.to(opponent).emit('user:hitormiss', socketId)
+}
+
+const handleClickResponse = (socketId, hit) => {
+	io.to(socketId).emit('respons:hitormiss', socketId, hit)
+}
+
+
+
+
 
 /**
  * Export controller and attach handlers to events
@@ -101,9 +117,17 @@ module.exports = function(socket, _io) {
 	// listen to room reset (for dev, delete later) 
 	socket.on("reset:room", handleResetRoom);
 
+
+
 	// listen to user connect
 	socket.on('user:connect', handleConnect);
 
 	// handle user disconnect
 	socket.on('disconnect', handleDisconnect);
+
+	// listen to user:click
+	socket.on('user:click', handleUserClickBox)
+
+	// listen to user:click
+	socket.on('click:response', handleClickResponse)
 }
