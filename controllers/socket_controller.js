@@ -24,11 +24,9 @@ const randomPlayerStart = (userId, opponent) => {
 
 	if (randomNumber(11) <= 5) {
 		//player one start
-		// io.to(userId).emit("game:yourturn")
 		return userId 
 	} else {
 		//player two start
-		// io.to(opponent).emit("game:wait") 
 		return opponent
 	}
 }
@@ -38,7 +36,7 @@ const randomPlayerStart = (userId, opponent) => {
  * Handle a user connecting
  *
  */
-const handleConnect = (userId) => {
+const handleConnect = function(userId) {
 	// debug(`Client ${userId} clicked submit :O`);
 
 	// Push new user to lobby
@@ -51,24 +49,36 @@ const handleConnect = (userId) => {
 		room.push(lobby[0], lobby[1])
 
 		// find opponent
-		const opponent = room.find(user => user = !this.id)
+		const opponent = room.find(user => user != userId)
+
+
+
+		// debug("opponent:", opponent)
+		// debug("this.id:", this.id)
+		// debug("opponent:", opponent)
+
+
 
 		// remove two first players from lobby
 		lobby.splice(0, 2);
 	
 		// determine who starts by random
 		const startingPlayer = randomPlayerStart(userId, opponent)
-		const secondPlayer = room.find(user => user = !startingPlayer)
+		const secondPlayer = room.find(user => user != startingPlayer)
+
+		debug("startingPlayer:", startingPlayer)
+		debug("secondplayer:", secondPlayer)
 
 		// emit to players who starts
-		io.to(startingPlayer).emit("game:playerTurn")
-		io.to(secondPlayer).emit("game:playerWaiting")
+		io.to(startingPlayer).emit("game:playerTurn", startingPlayer)
+		// io.to(secondPlayer).emit("game:playerWaiting")
+
 	} else {
 		// wait for ongoing game to end
 		debug('Wait for game.')
 	}
 
-	debug(room)
+	// debug(room)
 }
 
 /**
@@ -91,16 +101,33 @@ const handleResetRoom = () => {
  * Handle a user click and hit/miss response
  *
  */
-const handleUserClickBox = (socketId) => {
-	const opponent = room.find(user => user = !socketId)
+const handleUserClickBox = function(socketId)  {
+	const opponent = room.find(user => user != socketId)
 	io.to(opponent).emit('user:hitormiss', socketId)
+	debug("Användare klickade på en ruta")
+	// debug("socketId:", socketId)
+	// debug("opponent:", opponent)
 }
 
-const handleClickResponse = (socketId, hit) => {
-	io.to(socketId).emit('respons:hitormiss', socketId, hit)
+const handleClickResponse = function(socketId, hit) {
+	debug("respons på hit/miss-check")
+	io.to(socketId).emit('response:hitormiss', socketId, hit)
 }
 
+let rep = 0;
 
+
+const handleNextPlayer = function(socketId) {
+	const opponent = room.find(user => user != socketId)
+
+	debug("socketId:", socketId)
+	debug("opponent:", opponent)
+
+	rep++
+	debug(rep)
+
+	io.to(opponent).emit('game:playerTurn')
+}
 
 
 
@@ -130,4 +157,7 @@ module.exports = function(socket, _io) {
 
 	// listen to user:click
 	socket.on('click:response', handleClickResponse)
+
+
+	socket.on('game:nextPlayer', handleNextPlayer)
 }
