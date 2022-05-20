@@ -72,6 +72,8 @@ const handleConnect = function(userId) {
 		// emit to players who starts
 		io.to(startingPlayer).emit("game:playerTurn", startingPlayer)
 		// io.to(secondPlayer).emit("game:playerWaiting")
+		
+		io.emit("game:start")
 
 	} else {
 		// wait for ongoing game to end
