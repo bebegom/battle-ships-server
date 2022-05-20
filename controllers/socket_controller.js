@@ -103,12 +103,17 @@ const handleResetRoom = () => {
  * Handle a user click and hit/miss response
  *
  */
-const handleUserClickBox = function(socketId)  {
-	const opponent = room.find(user => user != socketId)
-	io.to(opponent).emit('user:hitormiss', socketId)
+const handleUserClickBox = function(socketId, boxId)  {
 	debug("Användare klickade på en ruta")
-	// debug("socketId:", socketId)
-	// debug("opponent:", opponent)
+
+	// convert from opponent ID to ID (oa5 => a5)
+	const convBoxId = boxId.slice(1)
+
+	// find opponent in room
+	const opponent = room.find(user => user != socketId)
+
+	// emit question to opponent
+	io.to(opponent).emit('user:hitormiss', socketId, convBoxId)
 }
 
 const handleClickResponse = function(socketId, hit) {
