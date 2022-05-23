@@ -116,9 +116,10 @@ const handleUserClickBox = function(socketId, boxId)  {
 	io.to(opponent).emit('user:hitormiss', socketId, convBoxId)
 }
 
-const handleClickResponse = function(socketId, hit) {
+const handleClickResponse = function(socketId, hit, boxId) {
 	debug("respons på hit/miss-check")
-	io.to(socketId).emit('response:hitormiss', socketId, hit)
+	debug(boxId)
+	io.to(socketId).emit('response:hitormiss', socketId, hit, boxId)
 }
 
 let rep = 0;
