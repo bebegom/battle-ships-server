@@ -121,8 +121,6 @@ module.exports = function(socket, _io) {
 	// listen to room reset (for dev, delete later) 
 	socket.on("reset:room", handleResetRoom);
 
-
-
 	// listen to user connect
 	socket.on('user:connect', handleConnect);
 
