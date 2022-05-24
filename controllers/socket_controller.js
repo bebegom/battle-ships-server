@@ -118,7 +118,7 @@ const handleUserClickBox = function(socketId, boxId)  {
 
 const handleClickResponse = function(socketId, hit, boxId) {
 	debug("respons på hit/miss-check")
-	debug(boxId)
+	// debug(boxId)
 	io.to(socketId).emit('response:hitormiss', socketId, hit, boxId)
 }
 
@@ -137,7 +137,10 @@ const handleNextPlayer = function(socketId) {
 	io.to(opponent).emit('game:playerTurn')
 }
 
-
+const handleSendShipSunk = (socketId) => {
+	// const opponent = room.find(user => user != socketId)
+	io.to(socketId).emit('sending:ship:sunk:to:opponent')
+} 
 
 /**
  * Export controller and attach handlers to events
@@ -168,4 +171,6 @@ module.exports = function(socket, _io) {
 
 
 	socket.on('game:nextPlayer', handleNextPlayer)
+
+	socket.on('send:ship:sunk:to:opponent', handleSendShipSunk)
 }
