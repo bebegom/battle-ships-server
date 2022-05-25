@@ -111,9 +111,14 @@ const handleNextPlayer = function(socketId) {
 
 const handleSendShipSunk = (socketId) => {
 	const opponent = room.find(user => user != socketId)
-	io.to(socketId).emit('sending:ship:sunk:to:opponent')
-	io.to(opponent).emit('your:ship:sunk')
+	// io.to(socketId).emit('sending:ship:sunk:to:opponent')
+	io.to(opponent).emit('your:ship:sunk', socketId)
 } 
+
+const handleUpdateMyShipsToOpponent = (socketId, shipsLeft) => {
+	const opponent = room.find(user => user != socketId)
+	io.to(socketId).emit('update:opponent:amount:of:ships', shipsLeft)
+}
 
 /**
  * Export controller and attach handlers to events
@@ -142,4 +147,6 @@ module.exports = function(socket, _io) {
 	socket.on('game:nextPlayer', handleNextPlayer)
 
 	socket.on('send:ship:sunk:to:opponent', handleSendShipSunk)
+
+	socket.on('send:my:amount:of:ships:to:opponent', handleUpdateMyShipsToOpponent)
 }
