@@ -110,8 +110,9 @@ const handleNextPlayer = function(socketId) {
 }
 
 const handleSendShipSunk = (socketId) => {
-	// const opponent = room.find(user => user != socketId)
+	const opponent = room.find(user => user != socketId)
 	io.to(socketId).emit('sending:ship:sunk:to:opponent')
+	io.to(opponent).emit('your:ship:sunk')
 } 
 
 /**
