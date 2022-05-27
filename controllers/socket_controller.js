@@ -70,8 +70,12 @@
   * Handle room reset button
   * (for dev, delete later)
   */
- const handleResetRoom = () => {
-	 room = [];
+ const handleResetRoom = (socketId) => {
+	 if (room.length > 1) {
+		room = [];
+	}
+
+	io.to(socketId).emit("reset:ships")
  }
  
  /**
@@ -115,8 +119,10 @@
 	 io.to(opponent).emit('your:ship:sunk', socketId)
  } 
 
- const handleNoShipsLeft = (opponent) => {
-	io.to(opponent).emit('opponent:have:no:ships:left')
+ const handleNoShipsLeft = (socketId) => {
+	const opponent = room.find(user => user != socketId)
+	io.to(socketId).emit('opponent:have:no:ships:left')
+	io.to(opponent).emit('you:lost')
  }
  
  /**
