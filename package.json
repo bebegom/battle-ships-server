@@ -4,7 +4,7 @@
   "private": true,
   "main": "server.js",
   "scripts": {
-    "build": "node server.js",
+    "start": "node server.js",
     "dev": "cross-env DEBUG=clock:* nodemon server.js",
     "debug": "cross-env DEBUG=clock:*,socket.io:client,socket.io:server nodemon --inspect server.js"
   },
