@@ -83,6 +83,7 @@
   */
   const handleDisconnect = function() {
 	 debug(`Client ${this.id} disconnected :(`);
+	 handleResetRoom()
  }
  
  /**
