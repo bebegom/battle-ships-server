@@ -77,7 +77,7 @@
 	// io.to(socketId).emit("reset:ships")
 
 	const opponent = room.find(user => user != socketId)
-	io.to(opponent).emit("reset:ships")
+	io.to(opponent).emit("reset:opponent:left:game")
 
 	room = []
  }
@@ -135,9 +135,14 @@ const handleDisconnect = function() {
  } 
 
  const handleNoShipsLeft = (socketId) => {
+	 io.emit("reset:ships")
 	const opponent = room.find(user => user != socketId)
 	io.to(socketId).emit('opponent:have:no:ships:left')
 	io.to(opponent).emit('you:lost')
+ }
+
+ const handleOpponentLeft = (socketId) => {
+	 io.to(socketId).emit('reload')
  }
  
  /**
@@ -169,4 +174,6 @@ const handleDisconnect = function() {
 	 socket.on('send:ship:sunk:to:opponent', handleSendShipSunk)
 
 	 socket.on('player:has:no:ships:left', handleNoShipsLeft)
+
+	 socket.on("opponent:left", handleOpponentLeft)
  }
