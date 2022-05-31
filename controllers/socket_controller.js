@@ -35,56 +35,79 @@
   * Handle a user connecting
   */
  const handleConnect = function(userId) {
-	 // Push new user to lobby
-	 lobby.push(userId)
+	 // Push new user to lobby if length is less than 2
+	if(lobby.length >= 0 && lobby.length < 2 && room.length === 0) {
+		lobby.push(userId)
+		
+		if(lobby.length === 2) {
+			// push first two players from lobby into gameroom
+			room.push(lobby[0], lobby[1])
  
-	 // Check if a game already is ongoing and another user is in lobby
-	 if (!room.length && lobby.length === 2) {
- 
-		 // push first two players from lobby into gameroom
-		 room.push(lobby[0], lobby[1])
- 
-		 // get opponent in room
-		 const opponent = room.find(user => user != userId)
- 
-		 // remove two first players from lobby
-		 lobby.splice(0, 2);
-	 
-		 // determine who starts by random
-		 const startingPlayer = randomPlayerStart(userId, opponent)
-		 const secondPlayer = room.find(user => user != startingPlayer)
- 
-		 // emit to players who starts
-		 io.to(startingPlayer).emit("game:playerTurn", startingPlayer)
-		 // io.to(secondPlayer).emit("game:playerWaiting")
-		 
-		 io.emit("game:start")
- 
-	 } else {
+			// get opponent in room
+			const opponent = room.find(user => user != userId)
+	
+			// remove two first players from lobby
+			lobby.splice(0, 2);
+
+			// determine who starts by random
+			const startingPlayer = randomPlayerStart(userId, opponent)
+			const secondPlayer = room.find(user => user != startingPlayer)
+	
+			// emit to players who starts
+			io.to(startingPlayer).emit("game:playerTurn", startingPlayer)
+			// io.to(secondPlayer).emit("game:playerWaiting")
+			
+			io.emit("game:start")
+		}
+	} else {
 		 // wait for ongoing game to end
-		 debug('Wait for game.')
-	 }
- }
+		 debug('There is already an ongoing game')
+		 return
+	}
+}
  
  /**
   * Handle room reset button
   * (for dev, delete later)
   */
  const handleResetRoom = (socketId) => {
-	 if (room.length > 1) {
-		room = [];
-	}
-
+	// if (room.length > 1) {
+	// 	room = [];
+	// } 
 	io.to(socketId).emit("reset:ships")
+
+	const opponent = room.find(user => user != socketId)
+	io.to(opponent).emit("reset:ships")
+
+	room = []
+ }
+
+ const handleResetRoomLol = (socketId) => {
+	 io.to(socketId).emit("reset:ships")
+	 
+	 const opponent = room.find(user => user != socketId)
+	 io.to(opponent).emit("reset:ships")
+	 
+	 room = []
  }
  
  /**
   * Handle a user disconnecting
   */
-  const handleDisconnect = function() {
-	 debug(`Client ${this.id} disconnected :(`);
-	 handleResetRoom()
- }
+const handleDisconnect = function() {
+	debug(`Client ${this.id} disconnected :(`);
+
+	// find socketId in room, if not do nothing
+	const disconnectedPlayer = room.find(user => user === this.id)
+	debug('player who disconnected: ', disconnectedPlayer)
+
+	// if player was in room
+	if(disconnectedPlayer !== undefined) {
+		handleResetRoom(disconnectedPlayer)
+	} else {
+		return
+	}
+}
  
  /**
   * Handle a user click and hit/miss response
@@ -136,7 +159,7 @@
 	 debug(`Client ${socket.id} connected :)`)
  
 	 // listen to room reset (for dev, delete later) 
-	 socket.on("reset:room", handleResetRoom);
+	 socket.on("reset:room", handleResetRoomLol);
  
 	 // listen to user connect
 	 socket.on('user:connect', handleConnect);
