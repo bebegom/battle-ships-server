@@ -81,15 +81,6 @@
 
 	room = []
  }
-
-const handleResetRoomLol = (socketId) => {
-	io.to(socketId).emit("reset:ships")
-	 
-	const opponent = room.find(user => user != socketId)
-	io.to(opponent).emit("reset:ships")
-	 
-	room = []
-}
  
  /**
   * Handle a user disconnecting
@@ -159,7 +150,7 @@ const handleDisconnect = function() {
 	 debug(`Client ${socket.id} connected :)`)
  
 	 // listen to room reset (for dev, delete later) 
-	socket.on("reset:room", handleResetRoomLol);
+	socket.on("reset:room", handleResetRoom);
  
 	 // listen to user connect
 	 socket.on('user:connect', handleConnect);
