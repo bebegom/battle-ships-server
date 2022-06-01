@@ -35,34 +35,39 @@
   * Handle a user connecting
   */
  const handleConnect = function(userId) {
-	 // Push new user to lobby if length is less than 2
-	if(lobby.length >= 0 && lobby.length < 2 && room.length === 0) {
-		lobby.push(userId)
-		
-		if(lobby.length === 2) {
-			// push first two players from lobby into gameroom
-			room.push(lobby[0], lobby[1])
- 
-			// get opponent in room
-			const opponent = room.find(user => user != userId)
-	
-			// remove two first players from lobby
-			lobby.splice(0, 2);
+	if (room.length >= 2) {
 
-			// determine who starts by random
-			const startingPlayer = randomPlayerStart(userId, opponent)
-			const secondPlayer = room.find(user => user != startingPlayer)
-	
-			// emit to players who starts
-			io.to(startingPlayer).emit("game:playerTurn", startingPlayer)
-			// io.to(secondPlayer).emit("game:playerWaiting")
-			
-			io.emit("game:start")
-		}
+		// wait for ongoing game to end
+		debug('There is already an ongoing game')
+
+		io.to(userId).emit("game:occupied")
+
 	} else {
-		 // wait for ongoing game to end
-		 debug('There is already an ongoing game')
-		 return
+		// Push new user to lobby if length is less than 2
+		if(lobby.length >= 0 && lobby.length < 2 && room.length === 0) {
+			lobby.push(userId)
+			
+			if(lobby.length === 2) {
+				// push first two players from lobby into gameroom
+				room.push(lobby[0], lobby[1])
+	
+				// get opponent in room
+				const opponent = room.find(user => user != userId)
+		
+				// remove two first players from lobby
+				lobby.splice(0, 2);
+
+				// determine who starts by random
+				const startingPlayer = randomPlayerStart(userId, opponent)
+				const secondPlayer = room.find(user => user != startingPlayer)
+		
+				// emit to players who starts
+				io.to(startingPlayer).emit("game:playerTurn", startingPlayer)
+				// io.to(secondPlayer).emit("game:playerWaiting")
+				
+				io.emit("game:start")
+			}
+		} 
 	}
 }
  
