@@ -35,6 +35,7 @@
   * Handle a user connecting
   */
  const handleConnect = function(userId) {
+
 	if (room.length >= 2) {
 
 		// wait for ongoing game to end
@@ -140,7 +141,7 @@ const handleDisconnect = function() {
  } 
 
  const handleNoShipsLeft = (socketId) => {
-	 io.emit("reset:ships")
+	io.emit("reset:ships")
 	const opponent = room.find(user => user != socketId)
 	io.to(socketId).emit('opponent:have:no:ships:left')
 	io.to(opponent).emit('you:lost')
@@ -171,7 +172,6 @@ const handleDisconnect = function() {
 	 // listen to user:click
 	 socket.on('user:click', handleUserClickBox)
  
-	 // listen to user:click
 	 socket.on('click:response', handleClickResponse)
  
 	 socket.on('game:nextPlayer', handleNextPlayer)
